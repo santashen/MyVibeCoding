@@ -1,0 +1,76 @@
+version: '3.8'
+
+services:
+  # PostgreSQL 数据库
+  db:
+    image: postgres:15-alpine
+    container_name: dalu_farm_db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-dalu}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-dalu_password}
+      POSTGRES_DB: ${POSTGRES_DB:-dalu_farm}
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-dalu} -d ${POSTGRES_DB:-dalu_farm}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - dalu_network
+
+  # FastAPI 后端
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: dalu_farm_backend
+    restart: unless-stopped
+    environment:
+      DATABASE_URL: postgresql://${POSTGRES_USER:-dalu}:${POSTGRES_PASSWORD:-dalu_password}@db:5432/${POSTGRES_DB:-dalu_farm}
+      API_V1_PREFIX: /api/v1
+      PROJECT_NAME: "大噜农场展示系统"
+      CORS_ORIGINS: ${CORS_ORIGINS:-http://localhost:5173}
+      SECRET_KEY: ${SECRET_KEY:-your-secret-key-change-in-production}
+      REQUIRE_AUTH: ${REQUIRE_AUTH:-false}
+    ports:
+      - "${BACKEND_PORT:-8000}:8000"
+    volumes:
+      - ./backend:/app
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - dalu_network
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+
+  # Vue.js 前端
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: dalu_farm_frontend
+    restart: unless-stopped
+    environment:
+      VITE_API_URL: ${VITE_API_URL:-http://localhost:8000/api/v1}
+    ports:
+      - "${FRONTEND_PORT:-5173}:5173"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    depends_on:
+      - backend
+    networks:
+      - dalu_network
+    command: npm run dev -- --host
+
+volumes:
+  postgres_data:
+    driver: local
+
+networks:
+  dalu_network:
+    driver: bridge
