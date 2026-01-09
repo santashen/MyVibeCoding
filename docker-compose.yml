@@ -11,7 +11,7 @@ services:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-dalu_password}
       POSTGRES_DB: ${POSTGRES_DB:-dalu_farm}
     ports:
-      - "${POSTGRES_PORT:-5432}:5432"
+      - "127.0.0.1:${POSTGRES_PORT:-5432}:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
@@ -33,11 +33,11 @@ services:
       DATABASE_URL: postgresql://${POSTGRES_USER:-dalu}:${POSTGRES_PASSWORD:-dalu_password}@db:5432/${POSTGRES_DB:-dalu_farm}
       API_V1_PREFIX: /api/v1
       PROJECT_NAME: "大噜农场展示系统"
-      CORS_ORIGINS: ${CORS_ORIGINS:-http://localhost:5173}
+      CORS_ORIGINS: ${CORS_ORIGINS:-http://localhost:5173, http://127.0.0.1:5173}
       SECRET_KEY: ${SECRET_KEY:-your-secret-key-change-in-production}
       REQUIRE_AUTH: ${REQUIRE_AUTH:-false}
     ports:
-      - "${BACKEND_PORT:-8000}:8000"
+      - "127.0.0.1:${BACKEND_PORT:-8000}:8000"
     volumes:
       - ./backend:/app
     depends_on:
@@ -55,9 +55,10 @@ services:
     container_name: dalu_farm_frontend
     restart: unless-stopped
     environment:
+      # Docker 网络中使用服务名访问后端
       VITE_API_URL: ${VITE_API_URL:-http://localhost:8000/api/v1}
     ports:
-      - "${FRONTEND_PORT:-5173}:5173"
+      - "127.0.0.1:${FRONTEND_PORT:-5173}:5173"
     volumes:
       - ./frontend:/app
       - /app/node_modules

@@ -1,6 +1,12 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
-import { cropsApi, type Crop, type CropCreate, type CropUpdate, type CropListParams } from '@/api/crops'
+import { cropsApi } from '@/api/crops'
+import type {
+  Crop,
+  CropCreate,
+  CropUpdate,
+  CropListParams
+} from '@/types/crop'
 
 export const useCropsStore = defineStore('crops', () => {
   const crops = ref<Crop[]>([])

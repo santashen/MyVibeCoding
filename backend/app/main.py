@@ -4,6 +4,11 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.core.config import settings
 from app.api.v1 import crops, animals, flowers, statistics
 
+# 数据库初始化（开发环境）
+if settings.AUTO_CREATE_TABLES:
+    from app.db.init_db import init_db
+    init_db()
+
 app = FastAPI(
     title=settings.PROJECT_NAME,
     description="大噜农场展示系统 API",

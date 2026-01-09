@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
-import { animalsApi, type Animal, type AnimalCreate, type AnimalUpdate } from '@/api/animals'
+import { animalsApi } from '@/api/animals'
+import type { Animal, AnimalCreate, AnimalUpdate } from '@/types/animal'
 
 export const useAnimalsStore = defineStore('animals', () => {
   const animals = ref<Animal[]>([])

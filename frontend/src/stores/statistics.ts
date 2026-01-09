@@ -1,6 +1,11 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
-import { statisticsApi, type OverviewStats, type ChartDataResponse } from '@/api/statistics'
+import { statisticsApi } from '@/api/statistics'
+import type {
+  OverviewStats,
+  ChartDataResponse
+} from '@/types/statistics'
+
 
 export const useStatisticsStore = defineStore('statistics', () => {
   const overview = ref<OverviewStats | null>(null)

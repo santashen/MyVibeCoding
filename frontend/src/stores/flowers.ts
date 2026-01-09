@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
-import { flowersApi, type Flower, type FlowerCreate, type FlowerUpdate } from '@/api/flowers'
+import { flowersApi } from '@/api/flowers'
+import type { Flower, FlowerCreate, FlowerUpdate } from '@/types/flower'
 
 export const useFlowersStore = defineStore('flowers', () => {
   const flowers = ref<Flower[]>([])
