@@ -50,11 +50,15 @@ export const useCropsStore = defineStore('crops', () => {
 
   async function createCrop(data: CropCreate) {
     loading.value = true
+    error.value = null
     try {
       const newCrop = await cropsApi.create(data)
       crops.value.unshift(newCrop)
       total.value++
       return newCrop
+    } catch (err: any) {
+      error.value = err.response?.data?.detail || '创建失败'
+      throw err
     } finally {
       loading.value = false
     }

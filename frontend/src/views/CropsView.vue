@@ -2,7 +2,7 @@
   <main class="main">
       <div class="page-header">
         <h2>粮食管理</h2>
-        <button class="btn btn-primary">添加粮食</button>
+        <button class="btn btn-primary" @click="drawerOpen = true">添加粮食</button>
       </div>
 
       <div class="table-container">
@@ -36,19 +36,31 @@
           </tbody>
         </table>
       </div>
+
+      <SideDrawer v-model="drawerOpen" title="添加粮食">
+        <CropForm @success="handleSuccess" @cancel="drawerOpen = false" />
+      </SideDrawer>
   </main>
 </template>
 
 <script setup lang="ts">
+import { ref } from 'vue'
 import { onMounted } from 'vue'
 import { useCropsStore } from '@/stores/crops'
 import { CropStatus } from '@/types/crop'
+import SideDrawer from '@/components/common/SideDrawer.vue'
+import CropForm from '@/components/forms/CropForm.vue'
 
 const cropsStore = useCropsStore()
+const drawerOpen = ref(false)
 
 onMounted(() => {
   cropsStore.fetchCrops()
 })
+
+function handleSuccess() {
+  drawerOpen.value = false
+}
 
 function getStatusClass(status: CropStatus): string {
   const map = {

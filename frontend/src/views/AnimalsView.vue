@@ -2,7 +2,7 @@
   <main class="main">
       <div class="page-header">
         <h2>动物管理</h2>
-        <button class="btn btn-primary">添加动物</button>
+        <button class="btn btn-primary" @click="drawerOpen = true">添加动物</button>
       </div>
 
       <div class="table-container">
@@ -32,18 +32,30 @@
           </tbody>
         </table>
       </div>
+
+      <SideDrawer v-model="drawerOpen" title="添加动物">
+        <AnimalForm @success="handleSuccess" @cancel="drawerOpen = false" />
+      </SideDrawer>
   </main>
 </template>
 
 <script setup lang="ts">
+import { ref } from 'vue'
 import { onMounted } from 'vue'
 import { useAnimalsStore } from '@/stores/animals'
+import SideDrawer from '@/components/common/SideDrawer.vue'
+import AnimalForm from '@/components/forms/AnimalForm.vue'
 
 const animalsStore = useAnimalsStore()
+const drawerOpen = ref(false)
 
 onMounted(() => {
   animalsStore.fetchAnimals()
 })
+
+function handleSuccess() {
+  drawerOpen.value = false
+}
 </script>
 
 <style scoped>

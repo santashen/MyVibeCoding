@@ -2,7 +2,7 @@
   <main class="main">
       <div class="page-header">
         <h2>花卉管理</h2>
-        <button class="btn btn-primary">添加花卉</button>
+        <button class="btn btn-primary" @click="drawerOpen = true">添加花卉</button>
       </div>
 
       <div class="table-container">
@@ -32,18 +32,30 @@
           </tbody>
         </table>
       </div>
+
+      <SideDrawer v-model="drawerOpen" title="添加花卉">
+        <FlowerForm @success="handleSuccess" @cancel="drawerOpen = false" />
+      </SideDrawer>
   </main>
 </template>
 
 <script setup lang="ts">
+import { ref } from 'vue'
 import { onMounted } from 'vue'
 import { useFlowersStore } from '@/stores/flowers'
+import SideDrawer from '@/components/common/SideDrawer.vue'
+import FlowerForm from '@/components/forms/FlowerForm.vue'
 
 const flowersStore = useFlowersStore()
+const drawerOpen = ref(false)
 
 onMounted(() => {
   flowersStore.fetchFlowers()
 })
+
+function handleSuccess() {
+  drawerOpen.value = false
+}
 </script>
 
 <style scoped>

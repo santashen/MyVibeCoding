@@ -26,11 +26,15 @@ export const useAnimalsStore = defineStore('animals', () => {
 
   async function createAnimal(data: AnimalCreate) {
     loading.value = true
+    error.value = null
     try {
       const newAnimal = await animalsApi.create(data)
       animals.value.unshift(newAnimal)
       total.value++
       return newAnimal
+    } catch (err: any) {
+      error.value = err.response?.data?.detail || '创建失败'
+      throw err
     } finally {
       loading.value = false
     }

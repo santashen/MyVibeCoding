@@ -26,11 +26,15 @@ export const useFlowersStore = defineStore('flowers', () => {
 
   async function createFlower(data: FlowerCreate) {
     loading.value = true
+    error.value = null
     try {
       const newFlower = await flowersApi.create(data)
       flowers.value.unshift(newFlower)
       total.value++
       return newFlower
+    } catch (err: any) {
+      error.value = err.response?.data?.detail || '创建失败'
+      throw err
     } finally {
       loading.value = false
     }
